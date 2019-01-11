@@ -9,7 +9,16 @@ ENDIF()
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 include(ExternalProject)
+set(LCB_REPO_PROTOCOL http)
+if (LCB_REPO_USERNAME)
+    set(LCB_REPO_AT "@")
+else(LCB_REPO_USERNAME)
+    set(LCB_REPO_AT "")
+endif()
 
+set(LCB_REPO ${LCB_REPO_PROTOCOL}://${LCB_REPO_AT}${LCB_REPO_USERNAME}review.couchbase.org/libcouchbase)
+
+SET(LCB_PREFIX ${CMAKE_CURRENT_BINARY_DIR}})
 if (WIN32)
     ExternalProject_Add(libcouchbase
             SET(LIBCOUCHBASE_LIBRARY_NAME "libcouchbase.lib")
@@ -17,7 +26,7 @@ if (WIN32)
             SET(LIBCOUCHBASE_LIBRARY_FILE "<SOURCE_DIR>/build/lib/Release/${LIBCOUCHBASE_LIBRARY_NAME}")
             SET(LIBCOUCHBASE_DBG_LIBRARY_FILE "<SOURCE_DIR>/dbgbuild/lib/Debug/${LIBCOUCHBASE_DBG_LIBRARY_NAME}")
 
-            #PREFIX thirdparty/libcouchbase
+            PREFIX ${LCB_PREFIX}
             GIT_REPOSITORY ${LCB_REPO}
             GIT_TAG ${_git_rev}
 
@@ -68,7 +77,7 @@ else (WIN32)
 
     SET(_parallelism 4)
     ExternalProject_Add(libcouchbase
-            #PREFIX thirdparty/libcouchbase
+            PREFIX ${LCB_PREFIX}
             GIT_REPOSITORY ${LCB_REPO}
             GIT_TAG ${_git_rev}
 
@@ -112,6 +121,7 @@ ENDIF()
 
 ADD_EXECUTABLE(example ${PROJECT_SOURCE_DIR}/example.cpp)
 TARGET_LINK_LIBRARIES(example couchbase)
+add_dependencies(example libcouchbase)
 
 ENABLE_TESTING()
 ADD_SUBDIRECTORY(tests)
