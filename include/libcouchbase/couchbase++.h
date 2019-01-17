@@ -688,6 +688,9 @@ public:
         return get(GetCommand(params...));
 
     }
+    template <typename ...Params>  const std::string get_as_string(Params... params) {
+        return get(params...).value().to_string();
+    }
 
     template <lcb_storage_t T> inline StoreResponse store(const StoreCommand<T>&);
 
