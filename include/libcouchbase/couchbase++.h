@@ -49,7 +49,6 @@ public:
         return m_length == 0 ?
                 begin() : reinterpret_cast<const char*>(m_data) + m_length;
     }
-
 private:
     const void *m_data = NULL;
     size_t m_length = 0;
@@ -439,6 +438,9 @@ public:
     inline void value(std::vector<char>&v) const;
 
     Buffer value() const { return Buffer(valuebuf(), valuesize()); }
+    std::string str() const{
+        return value();
+    }
 
     //! Get the flags of the item. See StoreCommand::itemflags
     uint32_t valueflags() const { return u.resp.itmflags; }
@@ -687,6 +689,9 @@ public:
     template <typename ...Params> GetResponse get(Params... params) {
         return get(GetCommand(params...));
 
+    }
+    template <typename ...Params>  const std::string get_as_string(Params... params) {
+        return get(params...).value().to_string();
     }
 
     template <lcb_storage_t T> inline StoreResponse store(const StoreCommand<T>&);
